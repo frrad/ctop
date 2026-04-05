@@ -76,8 +76,19 @@ def make_fetch_js(coords):
       'content-type': 'application/json'
     }},
     body: JSON.stringify(body)
+  }}).then(r => r.json()).then(searchData => {{
+    console.log('search response:', searchData);
+    const qs = JSON.stringify({{
+      isMapVisible: true,
+      mapBounds: {json.dumps(bounds)},
+      mapZoom: 14,
+      filterState: {{sort: {{value: "globalrelevanceex"}}}},
+      isListVisible: true,
+      customRegionId: regionId
+    }});
+    window.location.href = '/homes/for_sale/?searchQueryState=' + encodeURIComponent(qs);
   }});
-}}).then(r => r.json()).then(console.log).catch(console.error)"""
+}}).catch(console.error)"""
 
 
 def main():
