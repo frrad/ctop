@@ -6,6 +6,7 @@ import geopandas as gpd
 from shapely.geometry import MultiPolygon
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "sf_tracts.geojson")
+DEFAULT_GEOIDS = ["06075980900", "06075061401"]
 
 
 def make_fetch_js(coords):
@@ -41,12 +42,7 @@ def make_fetch_js(coords):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print(f"Usage: {sys.argv[0]} GEOID [GEOID ...]", file=sys.stderr)
-        print(f"Example: {sys.argv[0]} 06075010100 06075010200", file=sys.stderr)
-        sys.exit(1)
-
-    geoids = sys.argv[1:]
+    geoids = sys.argv[1:] if len(sys.argv) > 1 else DEFAULT_GEOIDS
     gdf = gpd.read_file(DATA_FILE)
 
     selected = gdf[gdf["GEOID"].isin(geoids)]
