@@ -37,7 +37,7 @@ def make_fetch_js(coords):
     'content-type': 'application/json',
     'x-caller-id': 'search-page-map'
   }},
-  body: {body}
+  body: JSON.stringify({body})
 }}).then(r => r.json()).then(console.log).catch(console.error)"""
 
 
