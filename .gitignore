@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.zip
+tl_*.shp
+tl_*.shx
+tl_*.dbf
+tl_*.prj
+tl_*.cpg
+tl_*.xml
