@@ -6,7 +6,7 @@ import geopandas as gpd
 from shapely.geometry import MultiPolygon
 
 DATA_FILE = os.path.join(os.path.dirname(__file__), "data", "sf_tracts.geojson")
-DEFAULT_TRACTS_FILE = os.path.join(os.path.dirname(__file__), "main_section.txt")
+DEFAULT_TRACTS_FILE = os.path.join(os.path.dirname(__file__), "data", "main_section.txt")
 
 
 def make_fetch_js(coords):
