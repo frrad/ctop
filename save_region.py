@@ -12,7 +12,16 @@ DEFAULT_GEOIDS = ["06075980900", "06075061401"]
 def make_fetch_js(coords):
     polygon = "|".join(f"{lat},{lon}" for lat, lon in coords)
 
-    body = json.dumps({
+    lats = [lat for lat, lon in coords]
+    lons = [lon for lat, lon in coords]
+    bounds = {
+        "west": min(lons),
+        "east": max(lons),
+        "south": min(lats),
+        "north": max(lats),
+    }
+
+    save_body = json.dumps({
         "operationName": "SaveCustomRegion",
         "variables": {
             "customRegionToSave": {
@@ -30,6 +39,24 @@ def make_fetch_js(coords):
         ),
     })
 
+    search_body_template = json.dumps({
+        "searchQueryState": {
+            "isMapVisible": True,
+            "mapBounds": bounds,
+            "filterState": {"sortSelection": {"value": "globalrelevanceex"}},
+            "isListVisible": True,
+            "mapZoom": 14,
+            "customRegionId": "__REGION_ID__",
+        },
+        "wants": {
+            "cat1": ["listResults", "mapResults"],
+            "cat2": ["total"],
+            "abTrials": ["total"],
+        },
+        "requestId": 1,
+        "isDebugRequest": False,
+    })
+
     return f"""fetch('https://www.zillow.com/zg-graph?operationName=SaveCustomRegion', {{
   method: 'POST',
   headers: {{
@@ -37,7 +64,19 @@ def make_fetch_js(coords):
     'content-type': 'application/json',
     'x-caller-id': 'search-page-map'
   }},
-  body: JSON.stringify({body})
+  body: JSON.stringify({save_body})
+}}).then(r => r.json()).then(data => {{
+  const regionId = data.data.saveCustomRegion.customRegionId;
+  console.log('customRegionId:', regionId);
+  const body = JSON.parse('{search_body_template}'.replace('__REGION_ID__', regionId));
+  return fetch('https://www.zillow.com/async-create-search-page-state', {{
+    method: 'PUT',
+    headers: {{
+      'accept': '*/*',
+      'content-type': 'application/json'
+    }},
+    body: JSON.stringify(body)
+  }});
 }}).then(r => r.json()).then(console.log).catch(console.error)"""
 
 
