@@ -23,6 +23,12 @@ uv pip install -r requirements.txt
 
 Paste the output into the Chrome DevTools console while on zillow.com.
 
+To copy directly to clipboard (Wayland):
+
+```
+.venv/bin/python save_region.py | wl-copy
+```
+
 ## Regenerating tract data
 
 The SF county tract boundaries (`data/sf_tracts.geojson`) are checked in. To regenerate from the Census Bureau source:
