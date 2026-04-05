@@ -32,6 +32,8 @@ To copy directly to clipboard (Wayland):
 
 Paste the output into the Chrome DevTools console while on zillow.com.
 
+**Note:** Zillow may reject regions with complex polygons (many tracts merged together) when you try to save them to your account. The search works fine in-session, but saving can fail with a "too complex" error.
+
 ## Tract files
 
 Pre-built tract lists based on SFUSD CTIP1 tiebreaker areas (from [this Substack post](https://sfeducation.substack.com/p/what-new-public-data-tells-us-about)):
