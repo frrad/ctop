@@ -4,6 +4,8 @@ Generate Zillow custom region boundaries from SF census tracts.
 
 Takes census tract GEOIDs, computes their polygon union, and outputs a `fetch()` snippet you can paste into Chrome DevTools on zillow.com. The snippet saves the custom region, creates the search page state, and navigates to the results.
 
+**Zillow search link:** [Main CTIP1 section on Zillow](https://www.zillow.com/homes/for_sale/?searchQueryState=%7B%22isMapVisible%22%3Atrue%2C%22mapBounds%22%3A%7B%22west%22%3A-122.44281%2C%22east%22%3A-122.356559%2C%22south%22%3A37.708331%2C%22north%22%3A37.784194%7D%2C%22mapZoom%22%3A14%2C%22filterState%22%3A%7B%22sort%22%3A%7B%22value%22%3A%22globalrelevanceex%22%7D%7D%2C%22isListVisible%22%3Atrue%2C%22customRegionId%22%3A%222bf5e69d34X1-CR1llr7n84da457_w5g7m%22%7D) (this link may go stale if Zillow expires the custom region — re-run the script below to generate a fresh one)
+
 ## Setup
 
 ```
