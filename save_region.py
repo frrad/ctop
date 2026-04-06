@@ -117,7 +117,12 @@ def main():
     # Shapefile coords are (lon, lat), Zillow expects (lat, lon)
     coords = [(lat, lon) for lon, lat in union.exterior.coords]
 
-    print(make_fetch_js(coords))
+    js = make_fetch_js(coords)
+
+    out_path = os.path.join(os.path.dirname(__file__), "output.js")
+    with open(out_path, "w") as f:
+        f.write(js + "\n")
+    print(f"Wrote {out_path}")
 
 
 if __name__ == "__main__":

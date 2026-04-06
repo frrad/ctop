@@ -24,13 +24,7 @@ uv pip install -r requirements.txt
 .venv/bin/python save_region.py 06075020602 06075020500
 ```
 
-To copy directly to clipboard (Wayland):
-
-```
-.venv/bin/python save_region.py | wl-copy
-```
-
-Paste the output into the Chrome DevTools console while on zillow.com.
+The script writes the generated JavaScript to `output.js`. Paste its contents into the Chrome DevTools console while on zillow.com.
 
 **Note:** Zillow may reject regions with complex polygons (many tracts merged together) when you try to save them to your account. The search works fine in-session, but saving can fail with a "too complex" error.
 
