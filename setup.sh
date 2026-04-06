@@ -43,4 +43,10 @@ uv venv .venv
 echo "Installing dependencies..."
 uv pip install -r requirements.txt --python .venv/bin/python
 
+# Export venv PATH for Claude Code sessions
+if [ -n "${CLAUDE_ENV_FILE:-}" ]; then
+    echo "PATH=$SCRIPT_DIR/.venv/bin:\$PATH" >> "$CLAUDE_ENV_FILE"
+    echo "VIRTUAL_ENV=$SCRIPT_DIR/.venv" >> "$CLAUDE_ENV_FILE"
+fi
+
 echo "Setup complete. Activate the venv with: source .venv/bin/activate"
