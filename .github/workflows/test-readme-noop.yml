@@ -1,0 +1,24 @@
+name: Test README update is noop
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  readme-noop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install geopandas shapely
+
+      - name: Verify update-readme is a noop
+        run: |
+          cp README.md README.md.before
+          python save_region.py --update-readme
+          diff README.md.before README.md
