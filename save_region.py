@@ -161,7 +161,7 @@ def update_readme():
     import re
     pattern = re.escape(BEGIN_MARKER) + r".*?" + re.escape(END_MARKER)
     if re.search(pattern, readme, re.DOTALL):
-        readme = re.sub(pattern, generated, readme, flags=re.DOTALL)
+        readme = re.sub(pattern, lambda _: generated, readme, flags=re.DOTALL)
     else:
         print(f"Error: markers not found in {readme_path}", file=sys.stderr)
         sys.exit(1)
