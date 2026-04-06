@@ -91,33 +91,108 @@ def make_fetch_js(coords):
 }}).catch(console.error)"""
 
 
-def main():
-    if len(sys.argv) > 1 and os.path.isfile(sys.argv[1]):
-        with open(sys.argv[1]) as f:
-            geoids = [line.strip() for line in f if line.strip()]
-    elif len(sys.argv) > 1:
-        geoids = sys.argv[1:]
-    else:
-        with open(DEFAULT_TRACTS_FILE) as f:
-            geoids = [line.strip() for line in f if line.strip()]
-    gdf = gpd.read_file(DATA_FILE)
-
+def generate_js(geoids, gdf):
+    """Generate JS for the given GEOIDs. Returns the JS string or raises an error."""
     selected = gdf[gdf["GEOID"].isin(geoids)]
     missing = set(geoids) - set(selected["GEOID"])
     if missing:
-        print(f"Error: GEOIDs not found: {', '.join(sorted(missing))}", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError(f"GEOIDs not found: {', '.join(sorted(missing))}")
 
     union = selected.union_all()
 
     if isinstance(union, MultiPolygon):
-        print("Error: selected tracts are not contiguous", file=sys.stderr)
-        sys.exit(1)
+        raise ValueError("selected tracts are not contiguous")
 
     # Shapefile coords are (lon, lat), Zillow expects (lat, lon)
     coords = [(lat, lon) for lon, lat in union.exterior.coords]
+    return make_fetch_js(coords)
 
-    print(make_fetch_js(coords))
+
+def read_tract_file(path):
+    with open(path) as f:
+        return [line.strip() for line in f if line.strip() and not line.strip().startswith("#")]
+
+
+BEGIN_MARKER = "<!-- BEGIN GENERATED SCRIPTS -->"
+END_MARKER = "<!-- END GENERATED SCRIPTS -->"
+
+
+def update_readme():
+    root = os.path.dirname(__file__)
+    readme_path = os.path.join(root, "README.md")
+    data_dir = os.path.join(root, "data")
+    gdf = gpd.read_file(DATA_FILE)
+
+    # Find all tract files
+    tract_files = sorted(
+        f for f in os.listdir(data_dir) if f.endswith(".txt")
+    )
+
+    # Determine the default name from DEFAULT_TRACTS_FILE
+    default_name = os.path.splitext(os.path.basename(DEFAULT_TRACTS_FILE))[0]
+
+    # Generate JS for each tract file
+    sections = []
+    for fname in tract_files:
+        name = os.path.splitext(fname)[0]
+        path = os.path.join(data_dir, fname)
+        geoids = read_tract_file(path)
+        try:
+            js = generate_js(geoids, gdf)
+        except ValueError:
+            continue
+
+        if name == default_name:
+            block = f"### {name} (default)\n\n```javascript\n{js}\n```"
+            # Default goes first, not collapsible
+            sections.insert(0, block)
+        else:
+            block = (
+                f"<details>\n<summary>{name}</summary>\n\n"
+                f"```javascript\n{js}\n```\n\n</details>"
+            )
+            sections.append(block)
+
+    generated = BEGIN_MARKER + "\n\n" + "\n\n".join(sections) + "\n\n" + END_MARKER
+
+    with open(readme_path) as f:
+        readme = f.read()
+
+    import re
+    pattern = re.escape(BEGIN_MARKER) + r".*?" + re.escape(END_MARKER)
+    if re.search(pattern, readme, re.DOTALL):
+        readme = re.sub(pattern, generated, readme, flags=re.DOTALL)
+    else:
+        print(f"Error: markers not found in {readme_path}", file=sys.stderr)
+        sys.exit(1)
+
+    with open(readme_path, "w") as f:
+        f.write(readme)
+
+    print(f"Updated {readme_path}")
+
+
+def main():
+    if len(sys.argv) > 1 and sys.argv[1] == "--update-readme":
+        update_readme()
+        return
+
+    if len(sys.argv) > 1 and os.path.isfile(sys.argv[1]):
+        geoids = read_tract_file(sys.argv[1])
+    elif len(sys.argv) > 1:
+        geoids = sys.argv[1:]
+    else:
+        geoids = read_tract_file(DEFAULT_TRACTS_FILE)
+
+    gdf = gpd.read_file(DATA_FILE)
+
+    try:
+        js = generate_js(geoids, gdf)
+    except ValueError as e:
+        print(f"Error: {e}", file=sys.stderr)
+        sys.exit(1)
+
+    print(js)
 
 
 if __name__ == "__main__":
