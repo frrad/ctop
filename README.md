@@ -65,7 +65,7 @@ Copy-paste these into Chrome DevTools on zillow.com.
 
 <!-- BEGIN GENERATED SCRIPTS -->
 
-### main_section (default)
+### main_section (default) BROKEN ON PURPOSE
 
 ```javascript
 fetch('https://www.zillow.com/zg-graph?operationName=SaveCustomRegion', {
