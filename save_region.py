@@ -139,28 +139,18 @@ def update_readme():
         geoids = read_tract_file(path)
         try:
             js = generate_js(geoids, gdf)
-        except ValueError as e:
-            js = None
-            error = str(e)
+        except ValueError:
+            continue
 
         if name == default_name:
-            if js:
-                block = f"### {name} (default)\n\n```javascript\n{js}\n```"
-            else:
-                block = f"### {name} (default)\n\n> Skipped: {error}"
+            block = f"### {name} (default)\n\n```javascript\n{js}\n```"
             # Default goes first, not collapsible
             sections.insert(0, block)
         else:
-            if js:
-                block = (
-                    f"<details>\n<summary>{name}</summary>\n\n"
-                    f"```javascript\n{js}\n```\n\n</details>"
-                )
-            else:
-                block = (
-                    f"<details>\n<summary>{name}</summary>\n\n"
-                    f"> Skipped: {error}\n\n</details>"
-                )
+            block = (
+                f"<details>\n<summary>{name}</summary>\n\n"
+                f"```javascript\n{js}\n```\n\n</details>"
+            )
             sections.append(block)
 
     generated = BEGIN_MARKER + "\n\n" + "\n\n".join(sections) + "\n\n" + END_MARKER

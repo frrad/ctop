@@ -200,11 +200,4 @@ fetch('https://www.zillow.com/zg-graph?operationName=SaveCustomRegion', {
 
 </details>
 
-<details>
-<summary>treasure_island</summary>
-
-> Skipped: selected tracts are not contiguous
-
-</details>
-
 <!-- END GENERATED SCRIPTS -->
